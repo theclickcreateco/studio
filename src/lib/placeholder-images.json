@@ -1,3 +1,28 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "whimsytales-cover-1",
+      "description": "A whimsical cover for The Magical Forest adventure.",
+      "imageUrl": "https://images.unsplash.com/photo-1596237563267-84ffd99c80e1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxmYW50YXN5JTIwZm9yZXN0fGVufDB8fHx8MTc2MjQ3OTYxM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fantasy forest"
+    },
+    {
+      "id": "whimsytales-cover-2",
+      "description": "A colorful cover for The Boy Who Could Fly.",
+      "imageUrl": "https://images.unsplash.com/flagged/photo-1556898555-38a9b47a347f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjaGlsZCUyMHNreXxlbnwwfHx8fDE3NjI1MTA1Mjl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "child sky"
+    },
+    {
+      "id": "whimsytales-cover-3",
+      "description": "A vibrant cover for The Mystery of the Missing Toy.",
+      "imageUrl": "https://images.unsplash.com/photo-1759663174943-480d1da3b6db?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx0b3lzJTIwZGV0ZWN0aXZlfGVufDB8fHx8MTc2MjUxMDUyOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "toys detective"
+    },
+    {
+      "id": "whimsytales-cover-4",
+      "description": "An adventurous cover for The Little Bear's Big Journey.",
+      "imageUrl": "https://images.unsplash.com/photo-1649298598236-273d9cdf350b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxiZWFyJTIwbW91bnRhaW5zfGVufDB8fHx8MTc2MjUxMDUyOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bear mountains"
+    }
+  ]
 }
