@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sparkles, Library, Heart } from 'lucide-react';
+import { Sparkles, Library, Heart, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useUser } from '@/firebase';
 
 export function Header() {
   const pathname = usePathname();
+  const { user } = useUser();
 
   const navLinks = [
     { href: '/', label: 'Library', icon: Library },
@@ -36,6 +38,18 @@ export function Header() {
               <span className="hidden sm:inline">{label}</span>
             </Link>
           ))}
+           <Link
+              href={user ? "/admin" : "/login"}
+              className={cn(
+                'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                pathname === '/admin' || pathname === '/login'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground hover:bg-secondary'
+              )}
+            >
+              <User className="w-4 h-4" />
+              <span className="hidden sm:inline">{user ? 'Admin' : 'Login'}</span>
+            </Link>
         </nav>
       </div>
     </header>
