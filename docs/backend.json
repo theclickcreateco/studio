@@ -1,0 +1,260 @@
+{
+  "entities": {
+    "Story": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Story",
+      "type": "object",
+      "description": "Represents a storybook in the WhimsyTales app.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Story entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the story."
+        },
+        "author": {
+          "type": "string",
+          "description": "The author of the story."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief summary of the story."
+        },
+        "genre": {
+          "type": "string",
+          "description": "The genre of the story (e.g., fantasy, adventure)."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the story's cover image.",
+          "format": "uri"
+        },
+        "pages": {
+          "type": "array",
+          "description": "References to Pages within the story. (Relationship: Story 1:N Page)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "author",
+        "description",
+        "genre",
+        "imageUrl",
+        "pages"
+      ]
+    },
+    "Page": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Page",
+      "type": "object",
+      "description": "Represents a single page within a story.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Page entity."
+        },
+        "storyId": {
+          "type": "string",
+          "description": "Reference to Story this page belongs to. (Relationship: Story 1:N Page)"
+        },
+        "pageNumber": {
+          "type": "number",
+          "description": "The page number within the story."
+        },
+        "text": {
+          "type": "string",
+          "description": "The text content of the page."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the page's image.",
+          "format": "uri"
+        },
+        "audioUrl": {
+          "type": "string",
+          "description": "URL of the audio narration for the page.",
+          "format": "uri"
+        },
+        "animationData": {
+          "type": "string",
+          "description": "JSON data representing interactive animations on the page."
+        }
+      },
+      "required": [
+        "id",
+        "storyId",
+        "pageNumber",
+        "text",
+        "imageUrl",
+        "audioUrl"
+      ]
+    },
+    "Bookmark": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Bookmark",
+      "type": "object",
+      "description": "Represents a user's bookmark for a specific story.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Bookmark entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User who created the bookmark. (Relationship: User 1:N Bookmark)"
+        },
+        "storyId": {
+          "type": "string",
+          "description": "Reference to Story that is bookmarked. (Relationship: Story 1:N Bookmark)"
+        },
+        "pageNumber": {
+          "type": "number",
+          "description": "The page number the user bookmarked."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Date and time the bookmark was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "storyId",
+        "pageNumber",
+        "timestamp"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the WhimsyTales app.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "username": {
+          "type": "string",
+          "description": "The user's username."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/stories/{storyId}",
+        "definition": {
+          "entityName": "Story",
+          "schema": {
+            "$ref": "#/backend/entities/Story"
+          },
+          "description": "Stores story documents. Accessible to admins for CRUD operations.",
+          "params": [
+            {
+              "name": "storyId",
+              "description": "The unique identifier for the story."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/stories/{storyId}/pages/{pageId}",
+        "definition": {
+          "entityName": "Page",
+          "schema": {
+            "$ref": "#/backend/entities/Page"
+          },
+          "description": "Stores pages belonging to a specific story.",
+          "params": [
+            {
+              "name": "storyId",
+              "description": "The unique identifier for the story."
+            },
+            {
+              "name": "pageId",
+              "description": "The unique identifier for the page."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/bookmarks/{bookmarkId}",
+        "definition": {
+          "entityName": "Bookmark",
+          "schema": {
+            "$ref": "#/backend/entities/Bookmark"
+          },
+          "description": "Stores bookmarks for a specific user. Path-based ownership ensures only the user can access their own bookmarks.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "bookmarkId",
+              "description": "The unique identifier for the bookmark."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile information.  Path-based ownership ensures only the user can access their own profile. ",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Determines admin privileges. The existence of a document grants admin rights.  Used instead of custom claims.  Authorization Independence achieved via `exists()` in rules.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support the WhimsyTales app, focusing on stories, pages, user bookmarks, and website content management. Authorization Independence is achieved through path-based ownership for user-specific data (bookmarks) and a dedicated collection for global roles.\n\n*   `/stories`: Contains all story documents. No user-specific data is stored here, which simplifies security rules. Any user can potentially list all stories (QAP) if the security rules allow read access. Admin users can create, edit, and delete stories.\n*   `/stories/{storyId}/pages`: Subcollection of pages for each story. This nested structure reflects the 1:N relationship and allows for efficient data retrieval of pages for a specific story.\n*   `/users/{userId}/bookmarks`: Each user has their own collection of bookmarks. This isolates bookmark data and simplifies security rules, as only the user can access their own bookmarks (QAP).\n*   `/roles_admin/{userId}`: This collection determines who has admin privileges, enabling the creation, editing, and deletion of stories. The existence of a document with the user's ID in this collection grants admin rights.  Rules use `exists()` instead of `get()` for Authorization Independence.\n\nThis structure avoids hierarchical authorization dependencies (`get()` calls in rules) and enables atomic operations (transactions/batches). It supports the integrity of ownership and simplifies debugging by making authorization intent explicit."
+  }
+}

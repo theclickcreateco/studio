@@ -1,0 +1,150 @@
+/**
+ * @file Firestore Security Rules for WhimsyTales App
+ * @version Prototyping Mode - Data shape is not strictly validated.
+ *
+ * @description
+ * This ruleset enforces a multi-layered security model:
+ *   - **User Data**:  Strict path-based ownership for `/users/{userId}` and `/users/{userId}/bookmarks/{bookmarkId}` ensures users can only access their own data.
+ *   - **Content (Stories/Pages)**: Stories and pages are publicly readable, but only admins can create, update, or delete them.
+ *   - **Admin Roles**:  Admin privileges are granted by the existence of a document in the `/roles_admin/{userId}` collection.  Rules use `exists()` instead of `get()` for Authorization Independence.
+ *
+ * @dataStructure
+ *   - `/stories/{storyId}`: Stores story metadata. Publicly readable, admin-writeable.
+ *   - `/stories/{storyId}/pages/{pageId}`: Stores individual pages within a story. Publicly readable, admin-writeable.
+ *   - `/users/{userId}`: Stores user profile data.  Owner-only access.
+ *   - `/users/{userId}/bookmarks/{bookmarkId}`: Stores user-specific bookmarks. Owner-only access.
+ *   - `/roles_admin/{userId}`:  Indicates admin privileges.  Existence of document grants admin rights.
+ *
+ * @keySecurityDecisions
+ *   - Stories and Pages are publicly readable to enable content discovery.
+ *   - User data is strictly private, accessible only to the owning user.
+ *   - Admin roles are managed via document existence in `/roles_admin/{userId}` to avoid costly `get()` calls.
+ *   - User listing is disabled for privacy.
+ *
+ * @denormalizationForAuthorization
+ *   - Admin status is determined by the existence of a document in `/roles_admin/{userId}`. This avoids having to store and manage a separate list of admin UIDs or use custom claims.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Checks if the request is made by an authenticated user.
+     * @returns {boolean} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user ID matches the provided user ID.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @returns {boolean} True if the user is signed in and the user IDs match, false otherwise.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the authenticated user is an existing owner of the document.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @returns {boolean} True if the user is signed in, the user IDs match, and the document exists.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Checks if the user has admin privileges.
+     * @returns {boolean} True if the user has admin privileges, false otherwise.
+     */
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /**
+     * @description
+     * Allows public read access but restricts write access to admins only.
+     * @path /stories/{storyId}
+     * @allow (get, list): Any user can read or list stories.
+     * @allow (create, update, delete): An admin user can create, update, or delete stories.
+     * @deny (create, update, delete): A non-admin user cannot create, update, or delete stories.
+     * @principle Public read, admin-only writes.
+     */
+    match /stories/{storyId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description
+     * Allows public read access to pages but restricts write access to admins only.
+     * @path /stories/{storyId}/pages/{pageId}
+     * @allow (get, list): Any user can read or list pages within a story.
+     * @allow (create, update, delete): An admin user can create, update, or delete pages.
+     * @deny (create, update, delete): A non-admin user cannot create, update, or delete pages.
+     * @principle Public read, admin-only writes for pages.
+     */
+    match /stories/{storyId}/pages/{pageId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description
+     * Enforces path-based ownership for bookmarks, allowing only the owner to manage them.
+     * @path /users/{userId}/bookmarks/{bookmarkId}
+     * @allow (get, list): The owner of the bookmark can read or list their own bookmarks.
+     * @allow (create): The owner can create a bookmark.
+     * @allow (update, delete): The owner can update or delete their own bookmark.
+     * @deny (get, list, create, update, delete): A different user cannot access or modify another user's bookmarks.
+     * @principle Path-based ownership ensures only the user can access their own bookmarks.
+     */
+    match /users/{userId}/bookmarks/{bookmarkId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description
+     * Enforces path-based ownership for user profiles, allowing only the user to manage their own profile.
+     * @path /users/{userId}
+     * @allow (get): The owner of the profile can read their own profile.
+     * @allow (create): The owner can create their own profile (self-registration).
+     * @allow (update, delete): The owner can update or delete their own profile.
+     * @deny (get, create, update, delete): A different user cannot access or modify another user's profile.
+     * @principle Path-based ownership ensures only the user can access their own profile.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description
+     * Determines admin privileges based on the existence of a document in this collection.
+     * @path /roles_admin/{userId}
+     * @allow (get): Any user can check if a specific user has admin rights by trying to read this document.  The result will be "Not Found" if the user isn't an admin.
+     * @allow (create, update, delete): Only an existing admin can manage admin roles.
+     * @deny (create, update, delete): A non-admin user cannot grant themselves or others admin rights.
+     * @principle Admin rights are granted by document existence; only existing admins can manage roles.  Authorization Independence achieved via `exists()` in rules.
+     */
+    match /roles_admin/{userId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+  }
+}
