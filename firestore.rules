@@ -126,23 +126,25 @@ service cloud.firestore {
       allow get: if isOwner(userId);
       allow list: if isOwner(userId) || isSignedIn();
       allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      update: if isExistingOwner(userId);
+      delete: if isExistingOwner(userId);
     }
 
     /**
      * @description
-     * Determines admin privileges based on the existence of a document in this collection.
+     * Determines admin privileges. The first user can self-assign as admin. Subsequent role changes
+     * require existing admin privileges.
      * @path /roles_admin/{userId}
-     * @allow (get): Any user can check if a specific user has admin rights by trying to read this document.  The result will be "Not Found" if the user isn't an admin.
-     * @allow (create, update, delete): Only an existing admin can manage admin roles.
-     * @deny (create, update, delete): A non-admin user cannot grant themselves or others admin rights.
-     * @principle Admin rights are granted by document existence; only existing admins can manage roles.  Authorization Independence achieved via `exists()` in rules.
+     * @allow create: A user can create an admin role for themselves ONLY if the `roles_admin` collection is empty (i.e., they are the first admin).
+     *                OR if the requesting user is already an admin.
+     * @allow (get): Any user can check if a specific user has admin rights.
+     * @allow (update, delete): Only an existing admin can manage admin roles.
+     * @principle Admin rights are granted by document existence. Securely bootstraps the first admin.
      */
     match /roles_admin/{userId} {
       allow get: if true;
       allow list: if false;
-      allow create: if isAdmin();
+      allow create: if (isOwner(userId) && !exists(/databases/$(database)/documents/roles_admin)) || isAdmin();
       allow update: if isAdmin() && resource != null;
       allow delete: if isAdmin() && resource != null;
     }
