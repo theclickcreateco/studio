@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import type { Story } from '@/lib/stories';
@@ -69,7 +69,7 @@ export function StoryViewer({ story, page }: StoryViewerProps) {
            </Link>
         </div>
 
-        <div className="md:w-1/2 flex items-center justify-center">
+        <div className="md:w-1/3 flex items-center justify-center">
             <div className="relative w-full aspect-[9/16] rounded-lg overflow-hidden">
                 <Image
                     src={imageUrl}
@@ -81,7 +81,7 @@ export function StoryViewer({ story, page }: StoryViewerProps) {
             </div>
         </div>
         
-        <div className="md:w-1/2 flex flex-col justify-between">
+        <div className="md:w-2/3 flex flex-col justify-between">
             <div className="text-center text-xl md:text-2xl lg:text-3xl leading-relaxed text-foreground flex-grow flex items-center justify-center">
                 <p>
                     {page.interactiveElement ? (
