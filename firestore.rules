@@ -5,7 +5,7 @@
  * @description
  * This ruleset enforces a multi-layered security model:
  *   - **User Data**:  Strict path-based ownership for `/users/{userId}` and `/users/{userId}/bookmarks/{bookmarkId}` ensures users can only access their own data.
- *   - **Content (Stories/Pages)**: Stories and pages are publicly readable, but only authenticated users can create, update, or delete them.
+ *   - **Content (Stories/Pages)**: Stories and pages are publicly readable, but only authenticated users with admin privileges can create, update, or delete them.
  *   - **Admin Roles**:  Admin privileges are granted by the existence of a document in the `/roles_admin/{userId}` collection.  Rules use `exists()` instead of `get()` for Authorization Independence.
  *
  * @dataStructure
@@ -73,9 +73,9 @@ service cloud.firestore {
      */
     match /stories/{storyId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource != null;
-      allow delete: if isSignedIn() && resource != null;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
     }
 
     /**
@@ -89,9 +89,9 @@ service cloud.firestore {
      */
     match /stories/{storyId}/pages/{pageId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource != null;
-      allow delete: if isSignedIn() && resource != null;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
     }
 
     /**
