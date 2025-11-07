@@ -6,6 +6,7 @@ export type Story = {
   pages: {
     pageNumber: number;
     text: string;
+    imageId: string;
     interactiveElement?: {
       word: string;
     };
@@ -22,6 +23,7 @@ export const stories: Story[] = [
       {
         pageNumber: 1,
         text: 'Once upon a time, in a shimmering magical forest, lived a little squirrel named Squeaky. He loved to collect shiny nuts.',
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 2,
@@ -29,14 +31,17 @@ export const stories: Story[] = [
         interactiveElement: {
           word: 'bounce',
         },
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 3,
         text: 'The bouncing acorn led him to a hidden part of the forest, where he met a wise old owl who taught him magic.',
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 4,
-        text: 'Squeaky the squirrel became the forest\'s new magical guardian, and everyone lived happily ever after. The End.',
+        text: "Squeaky the squirrel became the forest's new magical guardian, and everyone lived happily ever after. The End.",
+        imageId: 'page-image-placeholder',
       },
     ],
   },
@@ -49,10 +54,12 @@ export const stories: Story[] = [
       {
         pageNumber: 1,
         text: 'Leo was not an ordinary boy. He had a secret. On windy days, he could fly high up in the sky!',
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 2,
         text: 'He would soar above the houses and trees, waving to the birds. It was his favorite thing to do.',
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 3,
@@ -60,10 +67,12 @@ export const stories: Story[] = [
         interactiveElement: {
           word: 'swooped',
         },
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 4,
-        text: 'Leo gently carried the kitten back to its owner. From that day on, he was known as the town\'s flying superhero. The End.',
+        text: "Leo gently carried the kitten back to its owner. From that day on, he was known as the town's flying superhero. The End.",
+        imageId: 'page-image-placeholder',
       },
     ],
   },
@@ -76,10 +85,12 @@ export const stories: Story[] = [
       {
         pageNumber: 1,
         text: 'Lily\'s favorite teddy bear, Barnaby, was missing! "Oh no! Where could he be?" she wondered.',
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 2,
         text: 'She looked under her bed, in the closet, and even in the garden. But Barnaby was nowhere to be found.',
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 3,
@@ -87,26 +98,30 @@ export const stories: Story[] = [
         interactiveElement: {
           word: 'giggle',
         },
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 4,
         text: 'It turned out her puppy, Max, had hidden him there to play a game. Lily hugged Barnaby tight, happy to have found her friend. The End.',
+        imageId: 'page-image-placeholder',
       },
     ],
   },
   {
     id: '4',
-    title: 'The Little Bear\'s Big Journey',
+    title: "The Little Bear's Big Journey",
     author: 'Michael Brown',
     coverImageId: 'whimsytales-cover-4',
     pages: [
       {
         pageNumber: 1,
         text: 'A little bear named Benji wanted to see the world. He packed a bag with honey snacks and set off on a big journey.',
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 2,
         text: 'He crossed a wide river, climbed a tall mountain, and walked through a field of colorful flowers.',
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 3,
@@ -114,10 +129,12 @@ export const stories: Story[] = [
         interactiveElement: {
           word: 'dance',
         },
+        imageId: 'page-image-placeholder',
       },
       {
         pageNumber: 4,
         text: 'After his amazing adventure, Benji returned home with many stories to tell. He learned that the world is a wonderful place. The End.',
+        imageId: 'page-image-placeholder',
       },
     ],
   },
